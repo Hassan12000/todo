@@ -77,22 +77,8 @@ const Noteapp = () => {
           className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full outline-none focus:ring-orange-500 transition "
         />
       </div>
-      <div className="flex flex-wrap gap-4">
-        {notes
-          .filter(
-            (note) =>
-              note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              note.content.toLowerCase().includes(searchTerm.toLowerCase())
-          )
 
-          .map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              deleteNote={deleteNote}
-              handleUpdateNote={handleUpdateNote}
-            />
-          ))}
+      <div className="flex flex-wrap gap-4">
         <div
           id="input-field"
           className="bg-teal-400 p-4 rounded-lg w-85 h-56 flex flex-col justify-between shadow-lg"
@@ -125,6 +111,21 @@ const Noteapp = () => {
             </button>
           </div>
         </div>
+        {notes
+          .filter(
+            (note) =>
+              note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              note.content.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+
+          .map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              deleteNote={deleteNote}
+              handleUpdateNote={handleUpdateNote}
+            />
+          ))}
       </div>
     </div>
   );
