@@ -22,12 +22,12 @@ const Noteapp = () => {
   };
   const addNote = () => {
     if (newNote.title.trim() !== "" || newNote.content.trim() !== "") {
-      const noteToadd = {
+      const noteAdd = {
         ...newNote,
         id: Date.now(),
         date: new Date().toLocaleDateString("en-GB"),
       };
-      setNote((n) => [...n, noteToadd]);
+      setNote((n) => [noteAdd, ...n]);
       setNewNote({ title: "", content: "" });
     }
   };
