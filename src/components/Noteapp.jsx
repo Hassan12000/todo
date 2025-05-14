@@ -13,6 +13,7 @@ const Noteapp = () => {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const [isShiftHold, setIsShiftHold] = useState(false);
 
   const handleInputTitle = (event) => {
     setNewNote({ ...newNote, title: event.target.value });
@@ -28,8 +29,8 @@ const Noteapp = () => {
         date: new Date().toLocaleDateString("en-GB"),
       };
       setNote((n) => [noteAdd, ...n]);
-      setNewNote({ title: "", content: "" });
     }
+    setNewNote({ title: "", content: "" });
   };
   const deleteNote = (id) => {
     setNote(notes.filter((note) => note.id !== id));
@@ -53,6 +54,9 @@ const Noteapp = () => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+  useEffect(() => {
+    console.log(newNote.content);
+  }, [newNote]);
   return (
     <div className="min-h-screen dark:bg-black text-black dark:text-white p-6 px-15">
       <div className="flex justify-between mb-2">
@@ -96,7 +100,18 @@ const Noteapp = () => {
             value={newNote.content}
             onChange={handleInputContent}
             onKeyDown={(e) => {
-              if (e.key === "Enter") addNote();
+              console.log(e.key);
+              if (e.key === "Enter" && !isShiftHold) {
+                addNote();
+              }
+
+              if (e.key === "Shift") setIsShiftHold(true);
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter" && !isShiftHold) {
+                setNewNote({ title: "", content: "" });
+              }
+              if (e.key === "Shift") setIsShiftHold(false);
             }}
           />
           <div className="flex justify-between items-center ">
