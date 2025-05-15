@@ -39,6 +39,10 @@ const NoteCard = ({ note, deleteNote, handleUpdateNote }) => {
     window.addEventListener("resize", handleResize);
     return () => window.addEventListener("resize", handleResize);
   }, []);
+  useEffect(() => {
+    if (isMobile) setContentOpen(false);
+    else setContentOpen(true);
+  }, [isMobile]);
   return (
     <div
       className={`bg-yellow-300 p-4 rounded-lg w-85 ${
@@ -96,14 +100,12 @@ const NoteCard = ({ note, deleteNote, handleUpdateNote }) => {
                 </button>
               )}
             </div>
-            {isMobile ? (
-              isContentOpen && (
-                <p className="text-black mt-1 whitespace-pre-wrap min-h-40">
-                  {note.content}
-                </p>
-              )
-            ) : (
-              <p className="text-black mt-1 whitespace-pre-wrap min-h-40">
+            {isContentOpen && (
+              <p
+                className={`text-black mt-1 whitespace-pre-wrap ${
+                  isMobile && "min-h-40"
+                }`}
+              >
                 {note.content}
               </p>
             )}
