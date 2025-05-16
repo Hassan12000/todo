@@ -1,49 +1,47 @@
 import React, { useEffect, useState } from "react";
 import NoteCard from "./NoteCard";
 import { IoSearch } from "react-icons/io5";
+import { useNoteEditor } from "../../hooks/useNoteEditor";
+import Switch from "./Switch";
 
 const Noteapp = () => {
-  const [notes, setNote] = useState(
-    localStorage.getItem("notes")
-      ? JSON.parse(localStorage.getItem("notes"))
+  const { noteArray, editNote, deleteNote, createNote } = useNoteEditor(
+    localStorage.getItem("noteArray")
+      ? JSON.parse(localStorage.getItem("noteArray"))
       : []
   );
-  const [newNote, setNewNote] = useState({ title: "", content: "" });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
-  const [isShiftHold, setIsShiftHold] = useState(false);
 
-  const handleInputTitle = (event) => {
-    setNewNote({ ...newNote, title: event.target.value });
+  //--------------------------------------------------
+  const [searchTerm, setSearchTerm] = useState(""); // searchbar
+  const [isShiftHold, setIsShiftHold] = useState(false); // for new line
+
+  // handling note input---------------------------------
+  const [newNote, setNewNote] = useState({ title: "", content: "" });
+  const handleInput = (event) => {
+    setNewNote({
+      ...newNote,
+      [event.target.name]: event.target.value,
+    });
   };
-  const handleInputContent = (event) => {
-    setNewNote({ ...newNote, content: event.target.value });
-  };
-  const addNote = () => {
+
+  // creating the note--------------------------------------
+  const handleCreateNote = () => {
     if (newNote.title.trim() !== "" || newNote.content.trim() !== "") {
       const noteAdd = {
         ...newNote,
-        id: Date.now(),
-        date: new Date().toLocaleDateString("en-GB"),
+        _id: Date.now(),
+        date: new Date(),
       };
-      setNote((n) => [noteAdd, ...n]);
+      createNote(noteAdd);
     }
     setNewNote({ title: "", content: "" });
   };
-  const deleteNote = (id) => {
-    setNote(notes.filter((note) => note.id !== id));
-  };
-  const handleUpdateNote = (updatedNote, id) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === id ? { ...note, ...updatedNote } : note
-    );
-    setNote(updatedNotes);
-  };
-  useEffect(() => {
-    localStorage.setItem("notes", JSON.stringify(notes));
-  }, [notes]);
+
+  //setting theme ---------------------------------
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
+
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
@@ -54,19 +52,16 @@ const Noteapp = () => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
-  useEffect(() => {
-    console.log(newNote.content);
-  }, [newNote]);
+  //-------------------------------------------------
+
   return (
     <div className="min-h-screen dark:bg-black text-black dark:text-white p-6 px-15">
       <div className="flex justify-between mb-2">
         <h1 className="text-3xl font-bold mb-2">Notes</h1>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-black dark:text-white cursor-pointer hover:bg-gray-400 transition delay-150 duration-300 ease-in-out"
-        >
-          {darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
+        <div className="flex justify-between mb-4 items-center">
+          <h1 className="text-3xl font-bold">Notes</h1>
+          <Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />
+        </div>
       </div>
       <div className="relative w-ful mb-4">
         <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
@@ -74,8 +69,7 @@ const Noteapp = () => {
         </span>
         <input
           id="search-bar"
-          type="t
-          ext"
+          type="text"
           placeholder="Type of Search"
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full outline-none focus:ring-orange-500 transition "
@@ -89,8 +83,9 @@ const Noteapp = () => {
         >
           <input
             value={newNote.title}
+            name="title"
             type="text"
-            onChange={handleInputTitle}
+            onChange={handleInput}
             placeholder="Title"
             className="bg-transparent outline-none text-white font-bold placeholder:text-white"
           />
@@ -98,11 +93,11 @@ const Noteapp = () => {
             className="bg-transparent resize-none h-full text-white outline-none placeholder:text-white mt-2"
             placeholder="Write your note..."
             value={newNote.content}
-            onChange={handleInputContent}
+            name="content"
+            onChange={handleInput}
             onKeyDown={(e) => {
-              console.log(e.key);
               if (e.key === "Enter" && !isShiftHold) {
-                addNote();
+                handleCreateNote();
               }
 
               if (e.key === "Shift") setIsShiftHold(true);
@@ -120,25 +115,26 @@ const Noteapp = () => {
             </span>
             <button
               className="bg-white text-teal-600 px-3 py-1 rounded text-sm"
-              onClick={addNote}
+              onClick={handleCreateNote}
             >
               Save
             </button>
           </div>
         </div>
-        {notes
+        {[...noteArray]
           .filter(
             (note) =>
               note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
               note.content.toLowerCase().includes(searchTerm.toLowerCase())
           )
 
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map((note) => (
             <NoteCard
-              key={note.id}
+              key={note._id}
               note={note}
               deleteNote={deleteNote}
-              handleUpdateNote={handleUpdateNote}
+              handleUpdateNote={editNote}
             />
           ))}
       </div>

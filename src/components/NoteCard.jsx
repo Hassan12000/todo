@@ -10,14 +10,11 @@ const NoteCard = ({ note, deleteNote, handleUpdateNote }) => {
   const [isContentOpen, setContentOpen] = useState(false);
   const [isShiftHold, setIsShiftHold] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
-  const [editedNote, setEditedNote] = useState({
-    title: note.title,
-    content: note.content,
-  });
+  const [editedNote, setEditedNote] = useState(note);
   const inputRef = useRef(null);
   const handleEditNote = () => {
     if (isEditable) {
-      handleUpdateNote(editedNote, note.id);
+      handleUpdateNote(editedNote);
       setIsEditable(false);
     } else {
       setIsEditable(true);
@@ -113,7 +110,7 @@ const NoteCard = ({ note, deleteNote, handleUpdateNote }) => {
         </>
       )}
       <div className="flex justify-between items-center text-sm text-black mt-2">
-        <span>{note.date}</span>
+        <span>{new Date(note.date).toLocaleDateString("en-GB")}</span>
 
         {isContentOpen && (
           <div className="flex items-center space-x-2">
@@ -126,7 +123,7 @@ const NoteCard = ({ note, deleteNote, handleUpdateNote }) => {
             </button>
 
             <button
-              onClick={() => deleteNote(note.id)}
+              onClick={() => deleteNote(note._id)}
               className="text-sm text-black hover:text-red-600 cursor-pointer"
             >
               <FaDeleteLeft size={25} />
