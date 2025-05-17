@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import NoteCard from "./NoteCard";
 import { IoSearch } from "react-icons/io5";
 import { useNoteEditor } from "../../hooks/useNoteEditor";
-import Switch from "./Switch";
 
 const Noteapp = () => {
   const { noteArray, editNote, deleteNote, createNote } = useNoteEditor(
@@ -58,10 +57,12 @@ const Noteapp = () => {
     <div className="min-h-screen dark:bg-black text-black dark:text-white p-6 px-15">
       <div className="flex justify-between mb-2">
         <h1 className="text-3xl font-bold mb-2">Notes</h1>
-        <div className="flex justify-between mb-4 items-center">
-          <h1 className="text-3xl font-bold">Notes</h1>
-          <Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />
-        </div>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-black dark:text-white cursor-pointer hover:bg-gray-400 transition delay-150 duration-300 ease-in-out"
+        >
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
       </div>
       <div className="relative w-ful mb-4">
         <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
